@@ -8,6 +8,8 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from fastapi import FastAPI
 
+os.system("guardrails hub install hub://guardrails/toxic_language")
+
 # Store Groq API Key securely (Note: It's recommended to use environment variables)
 GROQ_API_KEY = "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"
 
