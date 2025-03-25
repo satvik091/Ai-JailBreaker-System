@@ -4,3 +4,5 @@ fastapi
 slowapi
 regex
 guardrails-ai
+pydantic<2
+
