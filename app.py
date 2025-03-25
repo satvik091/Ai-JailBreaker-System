@@ -6,7 +6,7 @@ from guardrails import Guard
 from fastapi import FastAPI
 
 # Store Groq API Key securely 
-GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+GROQ_API_KEY = ["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"]
 
 # Initialize Groq Client
 groq_client = groq.Client(api_key=GROQ_API_KEY)
