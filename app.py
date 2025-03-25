@@ -8,16 +8,14 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from fastapi import FastAPI
 
-os.system("guardrails hub install hub://guardrails/toxic_language")
-
-# Store Groq API Key securely (Note: It's recommended to use environment variables)
-GROQ_API_KEY = "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"
+# Retrieve API Key from Streamlit secrets
+GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 
 # Initialize Groq Client
 groq_client = groq.Client(api_key=GROQ_API_KEY)
 
-# Configure logging for jailbreak detection
-logging.basicConfig(filename="jailbreak_attempts.log", level=logging.WARNING)
+# Configure logging (Note: Logging to file won't work on Streamlit Cloud)
+logging.basicConfig(level=logging.WARNING)
 
 # Jailbreak Prompt Patterns
 jailbreak_patterns = [
@@ -31,17 +29,13 @@ jailbreak_patterns = [
 # Initialize Guardrails.ai for Toxicity Filtering
 guard = Guard().use(
      ToxicLanguage, threshold=0.5, validation_method="sentence", on_fail="exception"
- )
-
-# Initialize Rate Limiter
-limiter = Limiter(key_func=get_remote_address)
-app = FastAPI()
+)
 
 # Function to Detect Jailbreaking Attempts
 def detect_jailbreak(prompt):
     for pattern in jailbreak_patterns:
         if re.search(pattern, prompt, re.IGNORECASE):
-            logging.warning(f"🚨 Possible Jailbreak Attempt: {prompt}")
+            st.warning(f"🚨 Possible Jailbreak Attempt: {prompt}")
             return True
     return False
 
@@ -76,12 +70,15 @@ if st.button("Get AI Response"):
             ai_response = get_groq_response(user_input)
            
             # Step 3: Filter AI Response using Guardrails.ai
-            validation_result = guard.validate(ai_response)
-            
-            # Extract the validated output
-            if validation_result.validation_passed:
-                # If validation passes, use the validated output
-                st.success(validation_result.validated_output)
-            else:
-                # If validation fails, show an error
-                st.error("Response failed toxicity check.")
+            try:
+                validation_result = guard.validate(ai_response)
+                
+                # Extract the validated output
+                if validation_result.validation_passed:
+                    # If validation passes, use the validated output
+                    st.success(validation_result.validated_output)
+                else:
+                    # If validation fails, show an error
+                    st.error("Response failed toxicity check.")
+            except Exception as e:
+                st.error(f"Validation error: {e}")
