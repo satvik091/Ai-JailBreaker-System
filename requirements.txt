@@ -1,5 +1,6 @@
-streamlit 
-guardrails-ai 
-fastapi 
-slowapi 
+streamlit
 groq
+guardrails
+fastapi
+slowapi
+regex
