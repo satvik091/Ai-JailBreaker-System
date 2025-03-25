@@ -3,4 +3,4 @@ groq
 fastapi
 slowapi
 regex
-guardrails==1.0.1
+guardrails-ai
