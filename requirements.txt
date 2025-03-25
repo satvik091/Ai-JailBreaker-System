@@ -1,6 +1,6 @@
 streamlit
 groq
-guardrails
 fastapi
 slowapi
 regex
+guardrails==1.0.1
